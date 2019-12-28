@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="project-framework">
+    <description>A custom coding standard</description>
+
+    <arg name="colors" />
+    <arg value="p"/>
+
+    <file>src</file>
+    <file>public/index.php</file>
+
+    <rule ref="PSR2">
+
+    </rule>
+</ruleset>
