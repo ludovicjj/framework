@@ -2,12 +2,32 @@
 
 namespace Framework;
 
+use Framework\Exception\InvalidResponseException;
+use Framework\Router\Router;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class App
 {
+    private $router;
+
+    /** @var string[] */
+    private $module;
+
+    public function __construct(array $modules = [])
+    {
+        $this->router = new Router();
+        foreach ($modules as $module) {
+            $this->module = new $module($this->router);
+        }
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws InvalidResponseException
+     */
     public function run(ServerRequestInterface $request): ResponseInterface
     {
         $uri = $request->getUri()->getPath();
@@ -19,10 +39,32 @@ class App
             return $response;
         }
 
-        if ($uri === "/blog") {
-            return new Response(200, [], 'page du blog');
+        $route = $this->router->match($request);
+
+        if (is_null($route)) {
+            return new Response(404, [], 'page not found');
         }
 
-        return new Response(404, [], 'page not found');
+        $parameters = $route->getParameters();
+
+        // Add parameters in Request
+        $request = array_reduce(
+            array_keys($parameters),
+            function (ServerRequestInterface $request, $key) use ($parameters) {
+                return $request->withAttribute($key, $parameters[$key]);
+            },
+            $request
+        );
+
+        $response = call_user_func_array($route->getCallback(), [$request]);
+
+
+        if (is_string($response)) {
+            return new Response(200, [], $response);
+        } elseif ($response instanceof ResponseInterface) {
+            return $response;
+        } else {
+            throw new InvalidResponseException('Response is not a string or instance of ResponseInterface');
+        }
     }
 }
