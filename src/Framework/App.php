@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class App
 {
+    /** @var Router */
     private $router;
 
     /** @var string[] */

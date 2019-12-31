@@ -2,7 +2,7 @@
 
 namespace Framework\Renderer;
 
-class Renderer
+class PHPRenderer implements RendererInterface
 {
     const DEFAULT_NAMESPACE = '__MAIN';
 
@@ -11,6 +11,17 @@ class Renderer
 
     /** @var array */
     private $global = [];
+
+    /**
+     * Renderer constructor.
+     * @param string|null $defaultPath
+     */
+    public function __construct(?string $defaultPath = null)
+    {
+        if (!\is_null($defaultPath)) {
+            $this->addPath($defaultPath);
+        }
+    }
 
     /**
      * Add path for render template

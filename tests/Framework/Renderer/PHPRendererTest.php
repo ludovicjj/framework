@@ -2,24 +2,22 @@
 
 namespace Tests\Framework\Renderer;
 
-use Framework\Renderer\Renderer;
+use Framework\Renderer\PHPRenderer;
 use PHPUnit\Framework\TestCase;
 
-class RendererTest extends TestCase
+class PHPRendererTest extends TestCase
 {
-    /** @var Renderer */
+    /** @var PHPRenderer */
     private $renderer;
 
     public function setUp(): void
     {
-        $this->renderer = new Renderer();
+        $this->renderer = new PHPRenderer(dirname(__DIR__).'/views');
     }
 
     public function testRenderDefaultPath()
     {
-        $this->renderer->addPath(dirname(__DIR__).'/views');
         $content = $this->renderer->render('demo.php');
-
         $this->assertEquals('Silence is golden', $content);
     }
 
@@ -33,9 +31,8 @@ class RendererTest extends TestCase
 
     public function testRenderWithParameters()
     {
-        $this->renderer->addPath(dirname(__DIR__).'/views', 'demo');
         $content = $this->renderer->render(
-            '@demo/demoparams.php',
+            'demoparams.php',
             [
                 'name' => 'john'
             ]
@@ -46,9 +43,8 @@ class RendererTest extends TestCase
 
     public function testGlobalParameters()
     {
-        $this->renderer->addPath(dirname(__DIR__).'/views', 'demo');
         $this->renderer->addGlobal('name', 'john');
-        $content = $this->renderer->render('@demo/demoparams.php');
+        $content = $this->renderer->render('demoparams.php');
 
         $this->assertEquals('Your name is john', $content);
     }
