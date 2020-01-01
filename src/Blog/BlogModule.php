@@ -2,38 +2,30 @@
 
 namespace App\Blog;
 
+use App\Blog\Actions\BlogListAction;
+use App\Blog\Actions\BlogShowAction;
+use Framework\Module;
 use Framework\Renderer\RendererInterface;
 use Framework\Router\Router;
-use Psr\Http\Message\ServerRequestInterface;
 
-class BlogModule
+class BlogModule extends Module
 {
-    /** @var RendererInterface */
-    private $renderer;
+    const DEFINITIONS = __DIR__ . '/config/config.php';
 
+    /**
+     * BlogModule constructor.
+     * @param string $prefix
+     * @param Router $router
+     * @param RendererInterface $renderer
+     */
     public function __construct(
+        string $prefix,
         Router $router,
         RendererInterface $renderer
     ) {
-        $this->renderer = $renderer;
-        $this->renderer->addPath(__DIR__.'/views', 'blog');
+        $renderer->addPath(__DIR__.'/views', 'blog');
 
-        $router->addRoute('/blog', [$this, 'index'], ['GET'], 'blog.index');
-        $router->addRoute('/blog/{slug:[a-z\-0-9]+}', [$this, 'show'], ['GET'], 'blog.show');
-    }
-
-    public function index(ServerRequestInterface $request): string
-    {
-        return $this->renderer->render('@blog/index.html.twig');
-    }
-
-    public function show(ServerRequestInterface $request): string
-    {
-        return $this->renderer->render(
-            '@blog/show.html.twig',
-            [
-                'slug' => $request->getAttribute('slug')
-            ]
-        );
+        $router->addRoute($prefix, BlogListAction::class, ['GET'], 'blog.index');
+        $router->addRoute($prefix . '/{slug:[a-z\-0-9]+}', BlogShowAction::class, ['GET'], 'blog.show');
     }
 }

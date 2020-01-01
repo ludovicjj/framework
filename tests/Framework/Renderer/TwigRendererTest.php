@@ -4,6 +4,8 @@ namespace Tests\Framework\Renderer;
 
 use Framework\Renderer\TwigRenderer;
 use PHPUnit\Framework\TestCase;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class TwigRendererTest extends TestCase
 {
@@ -12,7 +14,9 @@ class TwigRendererTest extends TestCase
 
     public function setUp(): void
     {
-        $this->twigRenderer = new TwigRenderer(dirname(__DIR__).'/views');
+        $loader = new FilesystemLoader(dirname(__DIR__).'/views');
+        $twig = new Environment($loader, []);
+        $this->twigRenderer = new TwigRenderer($loader, $twig);
     }
 
     /**

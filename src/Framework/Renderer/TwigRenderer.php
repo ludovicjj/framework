@@ -14,16 +14,14 @@ class TwigRenderer implements RendererInterface
     private $loader;
 
     /**
-     * Defined default path is initialized in "public/index.php"
-     * Default path is directory "./views/" at the root level
-     *
      * TwigRenderer constructor.
-     * @param string $path
+     * @param FilesystemLoader $loader
+     * @param Environment $twig
      */
-    public function __construct(string $path)
+    public function __construct(FilesystemLoader $loader, Environment $twig)
     {
-        $this->loader = new FilesystemLoader($path);
-        $this->twig = new Environment($this->loader, []);
+        $this->loader = $loader;
+        $this->twig = $twig;
     }
 
     /**

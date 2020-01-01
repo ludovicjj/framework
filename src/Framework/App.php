@@ -5,27 +5,29 @@ namespace Framework;
 use Framework\Exception\InvalidResponseException;
 use Framework\Router\Router;
 use GuzzleHttp\Psr7\Response;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class App
 {
-    /** @var Router */
-    private $router;
-
     /** @var string[] */
     private $module;
 
-    public function __construct(array $modules = [], array $dependencies = [])
-    {
-        $this->router = new Router();
+    /** @var ContainerInterface */
+    private $container;
 
-        if (array_key_exists('renderer', $dependencies)) {
-            $dependencies['renderer']->addGlobal('router', $this->router);
-        }
+    /**
+     * App constructor.
+     * @param ContainerInterface $container
+     * @param array $modules
+     */
+    public function __construct(ContainerInterface $container, array $modules = [])
+    {
+        $this->container = $container;
 
         foreach ($modules as $module) {
-            $this->module = new $module($this->router, $dependencies['renderer']);
+            $this->module = $container->get($module);
         }
     }
 
@@ -45,7 +47,7 @@ class App
             return $response;
         }
 
-        $route = $this->router->match($request);
+        $route = $this->container->get(Router::class)->match($request);
 
         if (is_null($route)) {
             return new Response(404, [], 'page not found');
@@ -62,7 +64,17 @@ class App
             $request
         );
 
-        $response = call_user_func_array($route->getCallback(), [$request]);
+        /** @var string|callable $callback */
+        $callback = $route->getCallback();
+
+        if (is_string($callback)) {
+            $callback = $this->container->get($route->getCallback());
+        }
+
+        $response = call_user_func_array(
+            $callback,
+            [$request]
+        );
 
 
         if (is_string($response)) {
