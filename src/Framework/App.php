@@ -85,4 +85,12 @@ class App
             throw new InvalidResponseException('Response is not a string or instance of ResponseInterface');
         }
     }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
 }

@@ -53,7 +53,7 @@ class RouterTest extends TestCase
     {
         $request = new ServerRequest('GET', '/demo');
         $this->router->addRoute(
-            '/blog',
+            '/demo',
             function () {
                 return 'hello';
             },

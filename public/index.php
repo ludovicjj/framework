@@ -5,7 +5,7 @@ use Framework\App;
 use Framework\Exception\InvalidResponseException;
 use function Http\Response\send;
 
-require '../vendor/autoload.php';
+require dirname(__DIR__).'/vendor/autoload.php';
 
 $modules = [
     BlogModule::class
@@ -28,9 +28,11 @@ try {
 
 $app = new App($container, $modules);
 
-try {
-    $response = $app->run(\GuzzleHttp\Psr7\ServerRequest::fromGlobals());
-} catch (InvalidResponseException $responseException) {
-    echo 'Error response : ',  $responseException->getMessage();
+if (php_sapi_name() !== 'cli') {
+    try {
+        $response = $app->run(\GuzzleHttp\Psr7\ServerRequest::fromGlobals());
+    } catch (InvalidResponseException $responseException) {
+        echo 'Error response : ',  $responseException->getMessage();
+    }
+    send($response);
 }
-send($response);

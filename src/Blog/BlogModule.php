@@ -11,6 +11,8 @@ use Framework\Router\Router;
 class BlogModule extends Module
 {
     const DEFINITIONS = __DIR__ . '/config/config.php';
+    const MIGRATIONS =  __DIR__ . '/phinx/migrations';
+    const SEEDS =  __DIR__ . '/phinx/seeds';
 
     /**
      * BlogModule constructor.

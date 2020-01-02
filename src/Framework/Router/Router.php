@@ -3,9 +3,9 @@
 namespace Framework\Router;
 
 use Framework\Middleware\CallableMiddleware;
+use Mezzio\Router\FastRouteRouter;
+use Mezzio\Router\Route as MezzioRoute;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Router\FastRouteRouter;
-use Zend\Expressive\Router\Route as ZendRoute;
 
 class Router
 {
@@ -31,7 +31,7 @@ class Router
         array $method,
         string $name
     ) {
-        $this->router->addRoute(new ZendRoute($path, new CallableMiddleware($callback), $method, $name));
+        $this->router->addRoute(new MezzioRoute($path, new CallableMiddleware($callback), $method, $name));
     }
 
     /**

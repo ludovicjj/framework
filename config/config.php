@@ -9,6 +9,11 @@ use function DI\create;
 use function DI\get;
 
 return [
+    'database.host' => 'localhost',
+    'database.username' => 'root',
+    'database.password' => '',
+    'database.name' => 'jj_framework',
+
     'default.path' => dirname(__DIR__).'/views',
     'twig.extensions' => [
         get(RouterExtension::class)
