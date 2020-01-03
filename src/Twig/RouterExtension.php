@@ -2,21 +2,21 @@
 
 namespace Framework\Twig;
 
-use Framework\Router\Router;
+use Framework\Router\Interfaces\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\ExtensionInterface;
 use Twig\TwigFunction;
 
 class RouterExtension extends AbstractExtension implements ExtensionInterface
 {
-    /** @var Router */
+    /** @var RouterInterface */
     private $router;
 
     /**
      * RouterExtension constructor.
-     * @param Router $router
+     * @param RouterInterface $router
      */
-    public function __construct(Router $router)
+    public function __construct(RouterInterface $router)
     {
         $this->router = $router;
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Framework\Renderer;
+namespace Framework\Renderer\Interfaces;
 
-interface RendererInterface
+interface TwigRendererInterface
 {
     /**
      * Add path for render template

@@ -29,7 +29,6 @@ class CallableMiddleware implements MiddlewareInterface
         return $this->callback;
     }
 
-
     /**
      * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler

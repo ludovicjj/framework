@@ -5,28 +5,23 @@ use Framework\App;
 use Framework\Exception\InvalidResponseException;
 use function Http\Response\send;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+/**
+ * Define the root directory
+ */
+define('ROOT', realpath(dirname(__DIR__)));
+
+/**
+ * Require autoloader
+ */
+require ROOT.'/vendor/autoload.php';
 
 $modules = [
     BlogModule::class
 ];
 
-$builder = new \DI\ContainerBuilder();
-$builder->addDefinitions(dirname(__DIR__).'/config/config.php');
-
-foreach ($modules as $module) {
-    if (!\is_null($module::DEFINITIONS)) {
-        $builder->addDefinitions($module::DEFINITIONS);
-    }
-}
-
-try {
-    $container = $builder->build();
-} catch (\Exception $exception) {
-    echo 'Error container : ',  $exception->getMessage();
-}
-
-$app = new App($container, $modules);
+$app = (new App())
+    ->addModule(BlogModule::class)
+    ;
 
 if (php_sapi_name() !== 'cli') {
     try {

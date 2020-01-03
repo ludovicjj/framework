@@ -20,11 +20,11 @@ class RouterTest extends TestCase
     {
         $request = new ServerRequest('GET', '/blog');
         $this->router->addRoute(
+            ['GET'],
             '/blog',
             function () {
                 return 'hello';
             },
-            ['GET'],
             'blog'
         );
         $route = $this->router->match($request);
@@ -37,11 +37,11 @@ class RouterTest extends TestCase
     {
         $request = new ServerRequest('GET', '/demo');
         $this->router->addRoute(
+            ['GET'],
             '/blog',
             function () {
                 return 'hello';
             },
-            ['GET'],
             'blog'
         );
         $route = $this->router->match($request);
@@ -53,11 +53,11 @@ class RouterTest extends TestCase
     {
         $request = new ServerRequest('GET', '/demo');
         $this->router->addRoute(
+            ['POST'],
             '/demo',
             function () {
                 return 'hello';
             },
-            ['POST'],
             'blog'
         );
         $route = $this->router->match($request);
@@ -69,11 +69,11 @@ class RouterTest extends TestCase
     {
         $request = new ServerRequest('GET', '/blog/mon-slug-4');
         $this->router->addRoute(
+            ['GET'],
             '/blog/{slug:[a-z0-9\-]+}-{id:[0-9]+}',
             function () {
                 return 'page du post 4';
             },
-            ['GET'],
             'posts.show'
         );
         $route = $this->router->match($request);
@@ -93,11 +93,11 @@ class RouterTest extends TestCase
     {
         $request = new ServerRequest('GET', '/blog/mon_slug-4');
         $this->router->addRoute(
+            ['GET'],
             '/blog/{slug:[a-z0-9\-]+}-{id:[0-9]+}',
             function () {
                 return 'page du post 4';
             },
-            ['GET'],
             'posts.show'
         );
         $route = $this->router->match($request);
@@ -107,11 +107,11 @@ class RouterTest extends TestCase
     public function testGenerateUri()
     {
         $this->router->addRoute(
+            ['GET'],
             '/blog/{slug:[a-z0-9\-]+}-{id:[0-9]+}',
             function () {
                 return 'page du post 4';
             },
-            ['GET'],
             'posts.show'
         );
 

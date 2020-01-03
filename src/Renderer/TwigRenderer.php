@@ -2,10 +2,11 @@
 
 namespace Framework\Renderer;
 
+use Framework\Renderer\Interfaces\TwigRendererInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class TwigRenderer implements RendererInterface
+class TwigRenderer implements TwigRendererInterface
 {
     /** @var Environment */
     private $twig;
@@ -13,11 +14,6 @@ class TwigRenderer implements RendererInterface
     /** @var FilesystemLoader */
     private $loader;
 
-    /**
-     * TwigRenderer constructor.
-     * @param FilesystemLoader $loader
-     * @param Environment $twig
-     */
     public function __construct(FilesystemLoader $loader, Environment $twig)
     {
         $this->loader = $loader;

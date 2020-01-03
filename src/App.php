@@ -2,8 +2,9 @@
 
 namespace Framework;
 
+use DI\ContainerBuilder;
 use Framework\Exception\InvalidResponseException;
-use Framework\Router\Router;
+use Framework\Router\Interfaces\RouterInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -11,24 +12,17 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class App
 {
-    /** @var string[] */
-    private $module;
-
     /** @var ContainerInterface */
     private $container;
 
-    /**
-     * App constructor.
-     * @param ContainerInterface $container
-     * @param array $modules
-     */
-    public function __construct(ContainerInterface $container, array $modules = [])
-    {
-        $this->container = $container;
+    /** @var array  */
+    private $modules = [];
 
-        foreach ($modules as $module) {
-            $this->module = $container->get($module);
-        }
+
+    public function addModule(string $module): self
+    {
+        $this->modules[] = $module;
+        return $this;
     }
 
     /**
@@ -38,6 +32,11 @@ class App
      */
     public function run(ServerRequestInterface $request): ResponseInterface
     {
+        // Load Modules
+        foreach ($this->modules as $module) {
+            $this->getContainer()->get($module);
+        }
+
         $uri = $request->getUri()->getPath();
         if (!empty($uri) && $uri[-1] === "/") {
             $response = (new Response())
@@ -47,7 +46,7 @@ class App
             return $response;
         }
 
-        $route = $this->container->get(Router::class)->match($request);
+        $route = $this->container->get(RouterInterface::class)->match($request);
 
         if (is_null($route)) {
             return new Response(404, [], 'page not found');
@@ -64,18 +63,8 @@ class App
             $request
         );
 
-        /** @var string|callable $callback */
         $callback = $route->getCallback();
-
-        if (is_string($callback)) {
-            $callback = $this->container->get($route->getCallback());
-        }
-
-        $response = call_user_func_array(
-            $callback,
-            [$request]
-        );
-
+        $response = $this->checkCallback($callback, $request);
 
         if (is_string($response)) {
             return new Response(200, [], $response);
@@ -91,6 +80,41 @@ class App
      */
     public function getContainer(): ContainerInterface
     {
+        if ($this->container === null) {
+            $builder = new ContainerBuilder();
+            $builder->addDefinitions(ROOT . '/config/config.php');
+
+            // add definitions from modules into ContainerBuilder
+            foreach ($this->modules as $module) {
+                if (!\is_null($module::DEFINITIONS)) {
+                    $builder->addDefinitions($module::DEFINITIONS);
+                }
+            }
+
+            try {
+                $this->container = $builder->build();
+            } catch (\Exception $exception) {
+                echo 'Error container : ',  $exception->getMessage();
+            }
+        }
         return $this->container;
+    }
+
+    /**
+     * @param string|array|callable $callback
+     * @param ServerRequestInterface $request
+     * @return string|ResponseInterface
+     */
+    private function checkCallback($callback, ServerRequestInterface $request)
+    {
+        if (is_string($callback)) {
+            return call_user_func_array($this->container->get($callback), [$request]);
+        }
+
+        if (is_array($callback)) {
+            return call_user_func_array([$this->container->get($callback[0]), $callback[1]], [$request]);
+        }
+
+        return call_user_func_array($callback, [$request]);
     }
 }

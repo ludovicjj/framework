@@ -2,6 +2,8 @@
 
 namespace Framework\Renderer;
 
+use Framework\Renderer\Interfaces\RendererInterface;
+
 class PHPRenderer implements RendererInterface
 {
     const DEFAULT_NAMESPACE = '__MAIN';

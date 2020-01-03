@@ -3,11 +3,12 @@
 namespace Framework\Router;
 
 use Framework\Middleware\CallableMiddleware;
+use Framework\Router\Interfaces\RouterInterface;
 use Mezzio\Router\FastRouteRouter;
 use Mezzio\Router\Route as MezzioRoute;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Router
+class Router implements RouterInterface
 {
     /** @var FastRouteRouter */
     private $router;
@@ -20,23 +21,23 @@ class Router
     /**
      * Register new route
      *
-     * @param string $path
-     * @param callable|string $callback
      * @param array $method
+     * @param string $path
+     * @param array|string|callable $callback
      * @param string $name
      */
     public function addRoute(
+        array $method,
         string $path,
         $callback,
-        array $method,
         string $name
-    ) {
+    ): void {
         $this->router->addRoute(new MezzioRoute($path, new CallableMiddleware($callback), $method, $name));
     }
 
     /**
-     * Check if Request match with registered route,
-     * Return Route or Null.
+     * Get Route from Request
+     * if request match with any registered route, return null
      *
      * @param ServerRequestInterface $request
      * @return Route|null
@@ -60,12 +61,18 @@ class Router
     }
 
     /**
+     * Get Uri from route name
+     *
      * @param string $name
      * @param array $parameters
      * @return null|string
      */
     public function generateUri(string $name, array $parameters = []): ?string
     {
-        return $this->router->generateUri($name, $parameters);
+        try {
+            return $this->router->generateUri($name, $parameters);
+        } catch (\Exception $exception) {
+            return null;
+        }
     }
 }
