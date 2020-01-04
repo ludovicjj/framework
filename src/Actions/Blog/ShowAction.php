@@ -52,7 +52,7 @@ class ShowAction
 
         $post = $this->postRepository->find($request->getAttribute('id'));
 
-        if ($post === false) {
+        if (\is_null($post)) {
             throw new NotFoundRecordsException();
         }
 

@@ -65,12 +65,17 @@ class Router implements RouterInterface
      *
      * @param string $name
      * @param array $parameters
-     * @return null|string
+     * @param array $queryParams
+     * @return string|null
      */
-    public function generateUri(string $name, array $parameters = []): ?string
+    public function generateUri(string $name, array $parameters = [], array $queryParams = []): ?string
     {
         try {
-            return $this->router->generateUri($name, $parameters);
+            $uri = $this->router->generateUri($name, $parameters);
+            if (!empty($queryParams)) {
+                return $uri . '?' . http_build_query($queryParams);
+            }
+            return $uri;
         } catch (\Exception $exception) {
             return null;
         }

@@ -119,4 +119,24 @@ class RouterTest extends TestCase
 
         $this->assertEquals('/blog/mon-slug-42', $uri);
     }
+
+    public function testGenerateUriWithQueryParams()
+    {
+        $this->router->addRoute(
+            ['GET'],
+            '/blog/{slug:[a-z0-9\-]+}-{id:[0-9]+}',
+            function () {
+                return 'page du post 4';
+            },
+            'posts.show'
+        );
+
+        $uri = $this->router->generateUri(
+            'posts.show',
+            ['slug' => 'mon-slug', 'id' => 42],
+            ['p' => 2, 'd' => 5]
+        );
+
+        $this->assertEquals('/blog/mon-slug-42?p=2&d=5', $uri);
+    }
 }

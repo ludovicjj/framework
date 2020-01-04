@@ -32,7 +32,8 @@ interface RouterInterface
      *
      * @param string $name
      * @param array $parameters
+     * @param array $queryParams
      * @return string|null
      */
-    public function generateUri(string $name, array $parameters = []): ?string;
+    public function generateUri(string $name, array $parameters = [], array $queryParams = []): ?string;
 }

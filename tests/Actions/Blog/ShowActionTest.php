@@ -3,6 +3,7 @@
 namespace Tests\Actions\Blog;
 
 use App\Actions\Blog\ShowAction;
+use App\Domain\Blog\Entity\PostEntity;
 use App\Domain\Blog\Repository\PostRepository;
 use App\Domain\Common\Exception\NotFoundRecordsException;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
@@ -34,9 +35,15 @@ class ShowActionTest extends TestCase
         );
     }
 
-    public function makePost(int $id, string $slug): \stdClass
+    /**
+     * @param int $id
+     * @param string $slug
+     * @return PostEntity
+     * @throws \Exception
+     */
+    public function makePost(int $id, string $slug): PostEntity
     {
-        $post = new \stdClass();
+        $post = new PostEntity();
         $post->id = $id;
         $post->slug = $slug;
         return $post;
@@ -91,7 +98,7 @@ class ShowActionTest extends TestCase
             ->withAttribute('slug', 'demo-test')
         ;
 
-        $this->postRepository->find($post->id)->willReturn(false);
+        $this->postRepository->find($post->id)->willReturn(null);
 
         $this->expectException(NotFoundRecordsException::class);
         call_user_func_array([$this->action, 'show'], [$request]);

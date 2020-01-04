@@ -4,7 +4,10 @@ use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use App\Domain\Common\Renderer\TwigRendererFactory;
 use App\Domain\Common\Router\Interfaces\RouterInterface;
 use App\Domain\Common\Router\Router;
+use App\Domain\Common\Twig\PagerFantaExtension;
 use App\Domain\Common\Twig\RouterExtension;
+use App\Domain\Common\Twig\TextExtension;
+use App\Domain\Common\Twig\TimeExtension;
 use Psr\Container\ContainerInterface;
 use function DI\factory;
 use function DI\create;
@@ -17,7 +20,10 @@ return [
     'database.name' => 'jj_framework',
     'default.path' => ROOT.'/views',
     'twig.extensions' => [
-        get(RouterExtension::class)
+        get(RouterExtension::class),
+        get(PagerFantaExtension::class),
+        get(TextExtension::class),
+        get(TimeExtension::class)
     ],
     RouterInterface::class => create(Router::class),
     TwigRendererInterface::class => factory(TwigRendererFactory::class),

@@ -19,7 +19,7 @@ class App
     private $modules = [];
 
     /**
-     * Add modules
+     * Add modules, methods implement a fluent interface
      *
      * @param string $module
      * @return App

@@ -24,7 +24,7 @@ class BlogModule extends Module
     ) {
         $router->addRoute(
             ['GET'],
-            $prefix,
+            $prefix . '[/page/{page:[0-9]+}]',
             ListAction::class,
             'blog.index'
         );
