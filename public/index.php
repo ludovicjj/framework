@@ -1,8 +1,8 @@
 <?php
 
-use App\Blog\BlogModule;
-use Framework\App;
-use Framework\Exception\InvalidResponseException;
+use App\Domain\Blog\BlogModule;
+use App\Domain\Common\App;
+use App\Domain\Common\Exception\InvalidResponseException;
 use function Http\Response\send;
 
 /**
@@ -19,9 +19,7 @@ $modules = [
     BlogModule::class
 ];
 
-$app = (new App())
-    ->addModule(BlogModule::class)
-    ;
+$app = (new App())->addModule(BlogModule::class);
 
 if (php_sapi_name() !== 'cli') {
     try {
