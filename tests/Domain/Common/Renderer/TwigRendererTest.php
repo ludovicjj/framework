@@ -16,7 +16,7 @@ class TwigRendererTest extends TestCase
     {
         $loader = new FilesystemLoader(dirname(__DIR__).'/views');
         $twig = new Environment($loader, []);
-        $this->twigRenderer = new TwigRenderer($loader, $twig);
+        $this->twigRenderer = new TwigRenderer($twig);
     }
 
     /**

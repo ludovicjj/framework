@@ -18,7 +18,7 @@ return [
     'database.username' => 'root',
     'database.password' => '',
     'database.name' => 'jj_framework',
-    'default.path' => ROOT.'/views',
+    'default.path' => dirname(__DIR__).'/views',
     'twig.extensions' => [
         get(RouterExtension::class),
         get(PagerFantaExtension::class),

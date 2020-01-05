@@ -12,11 +12,19 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class App
 {
-    /** @var ContainerInterface $container */
+    /** @var ContainerInterface */
     private $container;
 
-    /** @var array $modules */
+    /** @var array */
     private $modules = [];
+
+    /** @var string */
+    private $definition;
+    
+    public function __construct(string $definition)
+    {
+        $this->definition = $definition;
+    }
 
     /**
      * Add modules, methods implement a fluent interface
@@ -90,9 +98,9 @@ class App
     {
         if ($this->container === null) {
             $builder = new ContainerBuilder();
-            $builder->addDefinitions(ROOT . '/src/Domain/Common/config/config.php');
+            $builder->addDefinitions($this->definition);
 
-            // add definitions from modules into ContainerBuilder
+            // foreach modules, add definitions into ContainerBuilder
             foreach ($this->modules as $module) {
                 if (!\is_null($module::DEFINITIONS)) {
                     $builder->addDefinitions($module::DEFINITIONS);

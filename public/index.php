@@ -6,20 +6,16 @@ use App\Domain\Common\Exception\InvalidResponseException;
 use function Http\Response\send;
 
 /**
- * Define the root directory
- */
-define('ROOT', realpath(dirname(__DIR__)));
-
-/**
  * Require autoloader
  */
-require ROOT.'/vendor/autoload.php';
+require dirname(__DIR__).'/vendor/autoload.php';
 
 $modules = [
     BlogModule::class
 ];
 
-$app = (new App())->addModule(BlogModule::class);
+$app = (new App(dirname(__DIR__).'/config/config.php'))
+    ->addModule(BlogModule::class);
 
 if (php_sapi_name() !== 'cli') {
     try {
