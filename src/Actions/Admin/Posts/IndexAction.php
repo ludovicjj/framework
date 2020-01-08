@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Actions\Blog;
+namespace App\Actions\Admin\Posts;
 
 use App\Domain\Blog\Repository\PostRepository;
 use App\Domain\Common\Exception\NotFoundException;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ListAction
+class IndexAction
 {
-    /** @var PostRepository  */
-    private $postRepository;
-
     /** @var TwigRendererInterface */
     private $renderer;
 
+    /** @var PostRepository */
+    private $postRepository;
+
     /**
-     * BlogListAction constructor.
+     * IndexAction constructor.
      * @param TwigRendererInterface $renderer
      * @param PostRepository $postRepository
      */
@@ -29,13 +29,13 @@ class ListAction
     }
 
     /**
-     * Display all posts
+     * Dashboard admin Post action
      *
      * @param ServerRequestInterface $request
      * @return string
      * @throws NotFoundException
      */
-    public function __invoke(ServerRequestInterface $request): string
+    public function index(ServerRequestInterface $request)
     {
         $page = $request->getAttribute('page', 1);
         $nbPage = $this->postRepository->getNbPage(12);
@@ -45,9 +45,8 @@ class ListAction
         }
 
         $posts = $this->postRepository->findPaginated(12, $page);
-
         return $this->renderer->render(
-            'blog/index.html.twig',
+            'admin/posts/index.html.twig',
             [
                 'posts' => $posts
             ]

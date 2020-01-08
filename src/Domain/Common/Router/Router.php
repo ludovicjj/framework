@@ -24,13 +24,13 @@ class Router implements RouterInterface
      * @param array $method
      * @param string $path
      * @param array|string|callable $callback
-     * @param string $name
+     * @param string|null $name
      */
     public function addRoute(
         array $method,
         string $path,
         $callback,
-        string $name
+        ?string $name = null
     ): void {
         $this->router->addRoute(new MezzioRoute($path, new CallableMiddleware($callback), $method, $name));
     }

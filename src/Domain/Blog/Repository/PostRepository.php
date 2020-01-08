@@ -64,6 +64,69 @@ class PostRepository
     }
 
     /**
+     * Update post in database
+     *
+     * @param int $id
+     * @param array $params
+     * @return bool
+     */
+    public function update(int $id, array $params): bool
+    {
+        $queryField = $this->buildFieldQuery($params);
+
+        // add ID into params
+        $params['id'] = $id;
+
+        $query = $this->pdo->prepare("UPDATE posts SET $queryField WHERE id = :id");
+        return $query->execute($params);
+    }
+
+    /**
+     * Create Post
+     * @param array $params
+     * @return bool
+     */
+    public function insert(array $params): bool
+    {
+        $fields = array_keys($params);
+
+        $values = join(', ', array_map(function ($value) {
+            return ":$value";
+        }, $fields));
+
+        $fields = join(', ', $fields);
+
+        $query = $this->pdo->prepare("INSERT INTO posts ($fields) VALUES ($values)");
+        return $query->execute($params);
+    }
+
+    /**
+     * Delete one Post by ID
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        $query = $this->pdo->prepare('DELETE FROM posts WHERE id = :id');
+        return $query->execute(['id' => $id]);
+    }
+
+    /**
+     * Helper to build field query.
+     * Exemple :  "name = :name, content = :content, ..."
+     *
+     * @param array $params
+     * @return string
+     */
+    private function buildFieldQuery(array $params): string
+    {
+        return join(', ', array_map(function ($keyField) {
+            return "$keyField = :$keyField";
+        }, array_keys($params)));
+    }
+
+    /**
      * @return PaginationQuery
      */
     private function makePaginationQuery(): PaginationQuery

@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Admin\AdminModule;
 use App\Domain\Blog\BlogModule;
 use App\Domain\Common\App;
 use App\Domain\Common\Exception\InvalidResponseException;
@@ -11,11 +12,14 @@ use function Http\Response\send;
 require dirname(__DIR__).'/vendor/autoload.php';
 
 $modules = [
-    BlogModule::class
+    BlogModule::class,
+    AdminModule::class
 ];
 
 $app = (new App(dirname(__DIR__).'/config/config.php'))
-    ->addModule(BlogModule::class);
+    ->addModule(BlogModule::class)
+    ->addModule(AdminModule::class)
+;
 
 if (php_sapi_name() !== 'cli') {
     try {

@@ -50,6 +50,15 @@ class App
             $this->getContainer()->get($module);
         }
 
+        // Update request method if field "_METHOD" exist
+        $parseBody = $request->getParsedBody();
+        if (array_key_exists('_METHOD', $parseBody) &&
+            in_array($parseBody['_METHOD'], ['DELETE', 'PUT'])
+        ) {
+            $request = $request->withMethod($parseBody['_METHOD']);
+        }
+
+        // Trailing slash
         $uri = $request->getUri()->getPath();
         if (!empty($uri) && $uri[-1] === "/") {
             $response = (new Response())

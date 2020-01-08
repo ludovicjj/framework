@@ -16,7 +16,7 @@ class ShowActionTest extends TestCase
     /** @var ShowAction */
     private $action;
 
-    private $twig;
+    private $renderer;
 
     private $postRepository;
 
@@ -24,12 +24,12 @@ class ShowActionTest extends TestCase
 
     public function setUp(): void
     {
-        $this->twig = $this->prophesize(TwigRendererInterface::class);
+        $this->renderer = $this->prophesize(TwigRendererInterface::class);
         $this->postRepository = $this->prophesize(PostRepository::class);
         $this->router = $this->prophesize(RouterInterface::class);
 
         $this->action = new ShowAction(
-            $this->twig->reveal(),
+            $this->renderer->reveal(),
             $this->postRepository->reveal(),
             $this->router->reveal()
         );
@@ -66,13 +66,13 @@ class ShowActionTest extends TestCase
                 'slug' => $post->slug,
                 'id' => $post->id
             ]
-        )->willReturn('/blog/demo-test-9');
+        )->willReturn('blog/demo-test-9');
 
         $this->postRepository->find($post->id)->willReturn($post);
 
         $response = call_user_func_array([$this->action, 'show'], [$request]);
         $this->assertEquals(301, $response->getStatusCode());
-        $this->assertEquals(['/blog/demo-test-9'], $response->getHeader('Location'));
+        $this->assertEquals(['blog/demo-test-9'], $response->getHeader('Location'));
     }
 
     public function testShowRender()
@@ -84,7 +84,7 @@ class ShowActionTest extends TestCase
         ;
 
         $this->postRepository->find($post->id)->willReturn($post);
-        $this->twig->render('/blog/show.html.twig', ['post' => $post])->willReturn('my test response');
+        $this->renderer->render('blog/show.html.twig', ['post' => $post])->willReturn('my test response');
 
         $response = call_user_func_array([$this->action, 'show'], [$request]);
         $this->assertEquals('my test response', $response);
