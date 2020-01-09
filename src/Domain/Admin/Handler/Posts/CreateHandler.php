@@ -27,7 +27,7 @@ class CreateHandler extends AbstractHandler
      * @param ServerRequestInterface $request
      * @return bool
      */
-    public function handler(ServerRequestInterface $request): bool
+    public function handle(ServerRequestInterface $request): bool
     {
         if ($request->getMethod() === 'POST') {
             $params = $this->getFilterParams($request);

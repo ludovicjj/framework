@@ -44,7 +44,7 @@ class CreateAction
      */
     public function create(ServerRequestInterface $request)
     {
-        if ($this->handler->handler($request)) {
+        if ($this->handler->handle($request)) {
             return new RedirectResponse($this->router->generateUri('admin.posts.index'));
         }
         return $this->renderer->render('admin/posts/create.html.twig');
