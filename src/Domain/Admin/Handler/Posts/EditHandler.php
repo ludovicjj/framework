@@ -4,6 +4,7 @@ namespace App\Domain\Admin\Handler\Posts;
 
 use App\Domain\Blog\Entity\PostEntity;
 use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Common\Session\Interfaces\FlashBagInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class EditHandler extends AbstractHandler
@@ -11,13 +12,20 @@ class EditHandler extends AbstractHandler
     /** @var PostRepository */
     private $postRepository;
 
+    /** @var FlashBagInterface */
+    private $flashBag;
+
     /**
      * EditHandler constructor.
      * @param PostRepository $postRepository
+     * @param FlashBagInterface $flashBag
      */
-    public function __construct(PostRepository $postRepository)
-    {
+    public function __construct(
+        PostRepository $postRepository,
+        FlashBagInterface $flashBag
+    ) {
         $this->postRepository = $postRepository;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -36,10 +44,9 @@ class EditHandler extends AbstractHandler
 
             $params['updated_at'] = date('Y-m-d H:i:s');
 
-            $this->postRepository->update(
-                (int)$post->id,
-                $params
-            );
+            $this->postRepository->update((int)$post->id, $params);
+
+            $this->flashBag->add('success', 'L\'article a bien été modifié');
 
             return true;
         }

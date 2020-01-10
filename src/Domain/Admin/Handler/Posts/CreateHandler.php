@@ -3,6 +3,7 @@
 namespace App\Domain\Admin\Handler\Posts;
 
 use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Common\Session\Interfaces\FlashBagInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class CreateHandler extends AbstractHandler
@@ -10,13 +11,20 @@ class CreateHandler extends AbstractHandler
     /** @var PostRepository */
     private $postRepository;
 
+    /** @var FlashBagInterface */
+    private $flashBag;
+
     /**
      * CreateHandler constructor.
      * @param PostRepository $postRepository
+     * @param FlashBagInterface $flashBag
      */
-    public function __construct(PostRepository $postRepository)
-    {
+    public function __construct(
+        PostRepository $postRepository,
+        FlashBagInterface $flashBag
+    ) {
         $this->postRepository = $postRepository;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -38,8 +46,8 @@ class CreateHandler extends AbstractHandler
                     'updated_at' => date('Y-m-d H:i:s')
                 ]
             );
-
             $this->postRepository->insert($params);
+            $this->flashBag->add('success', 'L\'article a bien été ajouté');
 
             return true;
         }

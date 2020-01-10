@@ -5,6 +5,7 @@ namespace Tests\Domain\Admin\Handler\Posts;
 use App\Domain\Admin\Handler\Posts\CreateHandler;
 use App\Domain\Blog\Entity\PostEntity;
 use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Common\Session\FlashBag;
 use GuzzleHttp\Psr7\ServerRequest;
 use Tests\DatabaseTestCase;
 
@@ -20,7 +21,11 @@ class CreateHandlerTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->postRepository = new PostRepository($this->pdo);
-        $this->handler = new CreateHandler($this->postRepository);
+        $flashBag = $this->prophesize(FlashBag::class);
+        $this->handler = new CreateHandler(
+            $this->postRepository,
+            $flashBag->reveal()
+        );
     }
 
     public function testHandleWithMethodGet()
