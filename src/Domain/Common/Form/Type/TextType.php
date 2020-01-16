@@ -21,12 +21,9 @@ class TextType extends AbstractType
         $attributes = [
             'class' => 'form-control',
             'id' => $key,
-            'name' => $key
+            'name' => $key,
+            'placeholder' => $options['attr']['placeholder'] ?? false
         ];
-
-        if ($options['attr']['placeholder'] ?? null) {
-            $attributes['placeholder'] = $options['attr']['placeholder'];
-        }
 
         //TODO Update attributes class if error
         if ($error) {

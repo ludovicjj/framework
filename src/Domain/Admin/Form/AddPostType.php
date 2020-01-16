@@ -28,7 +28,8 @@ class AddPostType extends AbstractType
             ->add('content', TextareaType::class, [
                 'label' => 'Description',
                 'attr' => [
-                    'rows' => '10'
+                    'rows' => '10',
+                    'placeholder' => 'La description de l\'article.'
                 ]
             ])
         ;

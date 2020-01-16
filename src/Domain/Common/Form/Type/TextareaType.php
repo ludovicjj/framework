@@ -19,7 +19,8 @@ class TextareaType extends AbstractType
             'class' => 'form-control',
             'id' => $key,
             'name' => $key,
-            'rows' => $options['attr']['rows'] ?? '4'
+            'rows' => $options['attr']['rows'] ?? '4',
+            'placeholder' => $options['attr']['placeholder'] ?? false
         ];
 
         //TODO Update attributes class if error
