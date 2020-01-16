@@ -2,7 +2,9 @@
 
 namespace App\Actions\Admin\Posts;
 
+use App\Domain\Admin\Form\AddPostType;
 use App\Domain\Admin\Handler\Posts\CreateHandler;
+use App\Domain\Common\Form\Interfaces\FormFactoryInterface;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use App\Domain\Common\Router\Interfaces\RouterInterface;
 use App\Responder\RedirectResponse;
@@ -14,26 +16,32 @@ class CreateAction
     /** @var TwigRendererInterface */
     private $renderer;
 
-    /** @var CreateHandler */
-    private $handler;
-
     /** @var RouterInterface */
     private $router;
+
+    /** @var FormFactoryInterface */
+    private $formFactory;
+
+    /** @var CreateHandler */
+    private $handler;
 
     /**
      * CreateAction constructor.
      * @param TwigRendererInterface $renderer
-     * @param CreateHandler $handler
      * @param RouterInterface $router
+     * @param FormFactoryInterface $formFactory
+     * @param CreateHandler $handler
      */
     public function __construct(
         TwigRendererInterface $renderer,
-        CreateHandler $handler,
-        RouterInterface $router
+        RouterInterface $router,
+        FormFactoryInterface $formFactory,
+        CreateHandler $handler
     ) {
         $this->renderer = $renderer;
-        $this->handler = $handler;
         $this->router = $router;
+        $this->formFactory = $formFactory;
+        $this->handler = $handler;
     }
 
     /**
@@ -44,9 +52,18 @@ class CreateAction
      */
     public function create(ServerRequestInterface $request)
     {
-        if ($this->handler->handle($request)) {
+        $form = $this->formFactory->create(AddPostType::class)->handleRequest($request);
+        if ($this->handler->handle($form)) {
             return new RedirectResponse($this->router->generateUri('admin.posts.index'));
         }
-        return $this->renderer->render('admin/posts/create.html.twig');
+        /*if ($this->handler->handle($request) === true) {
+            return new RedirectResponse($this->router->generateUri('admin.posts.index'));
+        }*/
+        return $this->renderer->render(
+            'admin/posts/create.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Blog;
 
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Repository\PostRepository;
 use App\Domain\Common\Exception\NotFoundRecordsException;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use App\Domain\Common\Router\Interfaces\RouterInterface;
@@ -50,14 +50,14 @@ class ShowAction
     {
         $slug = $request->getAttribute('slug');
 
-        $post = $this->postRepository->find($request->getAttribute('id'));
+        $post = $this->postRepository->find((int)$request->getAttribute('id'));
 
         if (\is_null($post)) {
             throw new NotFoundRecordsException();
         }
 
-        if ($post->slug !== $slug) {
-            return $this->redirect('blog.show', ['slug' => $post->slug, 'id' => $post->id]);
+        if ($post->getSlug() !== $slug) {
+            return $this->redirect('blog.show', ['slug' => $post->getSlug(), 'id' => $post->getId()]);
         }
 
         return $this->renderer->render('blog/show.html.twig', ['post' => $post]);

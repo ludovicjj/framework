@@ -3,8 +3,8 @@
 namespace Tests\Actions\Blog;
 
 use App\Actions\Blog\ShowAction;
-use App\Domain\Blog\Entity\PostEntity;
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Entity\PostEntity;
+use App\Domain\Repository\PostRepository;
 use App\Domain\Common\Exception\NotFoundRecordsException;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use App\Domain\Common\Router\Interfaces\RouterInterface;
@@ -44,31 +44,33 @@ class ShowActionTest extends TestCase
     public function makePost(int $id, string $slug): PostEntity
     {
         $post = new PostEntity();
-        $post->id = $id;
-        $post->slug = $slug;
+        $post->setId($id);
+        $post->setSlug($slug);
         return $post;
     }
 
     /**
      * Test RedirectResponse with invalid slug
+     *
+     * @throws \Exception
      */
     public function testShowRedirect()
     {
         $post = $this->makePost(9, "demo-test");
         $request = (new ServerRequest('GET', '/'))
-            ->withAttribute('id', $post->id)
+            ->withAttribute('id', $post->getId())
             ->withAttribute('slug', 'demo')
         ;
 
         $this->router->generateUri(
             'blog.show',
             [
-                'slug' => $post->slug,
-                'id' => $post->id
+                'slug' => $post->getSlug(),
+                'id' => $post->getId()
             ]
         )->willReturn('blog/demo-test-9');
 
-        $this->postRepository->find($post->id)->willReturn($post);
+        $this->postRepository->find($post->getId())->willReturn($post);
 
         $response = call_user_func_array([$this->action, 'show'], [$request]);
         $this->assertEquals(301, $response->getStatusCode());
@@ -79,11 +81,11 @@ class ShowActionTest extends TestCase
     {
         $post = $this->makePost(9, "demo-test");
         $request = (new ServerRequest('GET', '/'))
-            ->withAttribute('id', $post->id)
+            ->withAttribute('id', $post->getId())
             ->withAttribute('slug', 'demo-test')
         ;
 
-        $this->postRepository->find($post->id)->willReturn($post);
+        $this->postRepository->find($post->getId())->willReturn($post);
         $this->renderer->render('blog/show.html.twig', ['post' => $post])->willReturn('my test response');
 
         $response = call_user_func_array([$this->action, 'show'], [$request]);
@@ -94,11 +96,11 @@ class ShowActionTest extends TestCase
     {
         $post = $this->makePost(9, "demo-test");
         $request = (new ServerRequest('GET', '/'))
-            ->withAttribute('id', $post->id)
+            ->withAttribute('id', $post->getId())
             ->withAttribute('slug', 'demo-test')
         ;
 
-        $this->postRepository->find($post->id)->willReturn(null);
+        $this->postRepository->find($post->getId())->willReturn(null);
 
         $this->expectException(NotFoundRecordsException::class);
         call_user_func_array([$this->action, 'show'], [$request]);

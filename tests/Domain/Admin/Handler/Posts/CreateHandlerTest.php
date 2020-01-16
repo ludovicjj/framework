@@ -3,10 +3,10 @@
 namespace Tests\Domain\Admin\Handler\Posts;
 
 use App\Domain\Admin\Handler\Posts\CreateHandler;
-use App\Domain\Blog\Entity\PostEntity;
-use App\Domain\Blog\Repository\PostRepository;
-use App\Domain\Common\Session\FlashBag;
-use GuzzleHttp\Psr7\ServerRequest;
+use App\Domain\Common\Form\Interfaces\FormInterface;
+use App\Domain\Common\Session\Interfaces\FlashBagInterface;
+use App\Domain\Entity\PostEntity;
+use App\Domain\Repository\PostRepository;
 use Tests\DatabaseTestCase;
 
 class CreateHandlerTest extends DatabaseTestCase
@@ -21,51 +21,58 @@ class CreateHandlerTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->postRepository = new PostRepository($this->pdo);
-        $flashBag = $this->prophesize(FlashBag::class);
         $this->handler = new CreateHandler(
             $this->postRepository,
-            $flashBag->reveal()
+            $this->prophesize(FlashBagInterface::class)->reveal()
         );
     }
 
-    public function testHandleWithMethodGet()
+    public function testHandleWithMethodGetAndValidForm()
     {
-        $request = $this->makeRequest('GET', '/');
-        $result = $this->handler->handle($request);
+
+        $form = $this->createMock(FormInterface::class);
+        $form->method('isValid')->willReturn(true);
+        $form->method('isSubmitted')->willReturn(false);
+
+        $result = $this->handler->handle($form);
         $this->assertFalse($result);
     }
 
-    public function testHandleWithMethodPost()
+    public function testHandleWithMethodPostAndValidForm()
     {
-        $request = $this->makeRequest('POST', '/');
-        $request = $request->withParsedBody(
+        $form = $this->createMock(FormInterface::class);
+        $form->method('isValid')->willReturn(true);
+        $form->method('isSubmitted')->willReturn(true);
+        $form->method('getData')->willReturn(
             [
-                'name' => 'demo',
-                'slug' => 'demo-test',
-                'content' => 'my awesome content'
+                'name'=> 'demo',
+                'slug' => 'demo-slug',
+                'content' => 'my content'
             ]
         );
-        $result = $this->handler->handle($request);
+        $result = $this->handler->handle($form);
         $this->assertTrue($result);
     }
 
     public function testInsertInCreateHandler()
     {
-        $request = $this->makeRequest('POST', '/');
-        $request = $request->withParsedBody(
+        $form = $this->createMock(FormInterface::class);
+        $form->method('isValid')->willReturn(true);
+        $form->method('isSubmitted')->willReturn(true);
+        $form->method('getData')->willReturn(
             [
-                'name' => 'demo',
+                'name'=> 'demo',
                 'slug' => 'demo-test',
                 'content' => 'my awesome content'
             ]
         );
-        $this->handler->handle($request);
+        $this->handler->handle($form);
 
         $post = $this->postRepository->find(1);
         $this->assertInstanceOf(PostEntity::class, $post);
-        $this->assertEquals('demo', $post->name);
-        $this->assertEquals('demo-test', $post->slug);
-        $this->assertEquals('my awesome content', $post->content);
+        $this->assertEquals('demo', $post->getName());
+        $this->assertEquals('demo-test', $post->getSlug());
+        $this->assertEquals('my awesome content', $post->getContent());
     }
 
     /**
@@ -73,16 +80,16 @@ class CreateHandlerTest extends DatabaseTestCase
      */
     public function testFilterParams()
     {
-        $request = $this->makeRequest('POST', '/');
-        $request = $request->withParsedBody(
+        $form = $this->createMock(FormInterface::class);
+        $form->method('getData')->willReturn(
             [
-                'name' => 'demo',
+                'name'=> 'demo',
                 'slug' => 'demo-test',
                 'content' => 'my awesome content',
                 'leviathan' => 'alt 236'
             ]
         );
-        $filterParams = self::callPrivateMethod($this->handler, 'getFilterParams', [$request]);
+        $filterParams = self::callPrivateMethod($this->handler, 'getFilterParams', [$form->getData()]);
         $this->assertIsArray($filterParams);
         $this->assertCount(3, $filterParams);
         $this->assertSame(
@@ -107,17 +114,5 @@ class CreateHandlerTest extends DatabaseTestCase
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method->invokeArgs($obj, $args);
-    }
-
-    /**
-     * Build new ServerRequest
-     *
-     * @param string $method
-     * @param string $path
-     * @return ServerRequest
-     */
-    private function makeRequest(string $method, string $path)
-    {
-        return new ServerRequest($method, $path);
     }
 }

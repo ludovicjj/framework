@@ -2,10 +2,10 @@
 
 namespace App\Domain\Admin\Handler\Posts;
 
-use App\Domain\Blog\Entity\PostEntity;
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Common\Form\Interfaces\FormInterface;
+use App\Domain\Entity\PostEntity;
+use App\Domain\Repository\PostRepository;
 use App\Domain\Common\Session\Interfaces\FlashBagInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class EditHandler extends AbstractHandler
 {
@@ -29,22 +29,20 @@ class EditHandler extends AbstractHandler
     }
 
     /**
-     * Check method from request,
-     * filter request body by method getFilterParams() from abstract class AbstractHandler.
-     * Update post.
-     *
-     * @param ServerRequestInterface $request
+     * @param FormInterface $form
      * @param PostEntity $post
      * @return bool
      */
-    public function handle(ServerRequestInterface $request, PostEntity $post): bool
+    public function handle(FormInterface $form, PostEntity $post): bool
     {
-        if ($request->getMethod() === 'POST') {
-            $params = $this->getFilterParams($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $this->getFilterParams($form->getData());
+            $data['updated_at'] = date('Y-m-d H:i:s');
 
-            $params['updated_at'] = date('Y-m-d H:i:s');
-
-            $this->postRepository->update((int)$post->id, $params);
+            $this->postRepository->update(
+                (int)$post->getId(),
+                $data
+            );
 
             $this->flashBag->add('success', 'L\'article a bien été modifié');
 

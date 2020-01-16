@@ -2,8 +2,8 @@
 
 namespace Tests\Domain\Blog\Repository;
 
-use App\Domain\Blog\Entity\PostEntity;
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Entity\PostEntity;
+use App\Domain\Repository\PostRepository;
 use Tests\DatabaseTestCase;
 
 class PostRepositoryTest extends DatabaseTestCase
@@ -37,8 +37,8 @@ class PostRepositoryTest extends DatabaseTestCase
         $this->seedDatabase();
         $this->postRepository->update(1, ['name' => 'demo', 'slug' => 'demo-slug']);
         $post = $this->postRepository->find(1);
-        $this->assertEquals('demo', $post->name);
-        $this->assertEquals('demo-slug', $post->slug);
+        $this->assertEquals('demo', $post->getName());
+        $this->assertEquals('demo-slug', $post->getSlug());
     }
 
     public function testInsert()
@@ -46,8 +46,8 @@ class PostRepositoryTest extends DatabaseTestCase
         $this->postRepository->insert(['name' => 'demo', 'slug' => 'demo-slug']);
         $post = $this->postRepository->find(1);
         $this->assertInstanceOf(PostEntity::class, $post);
-        $this->assertEquals('demo', $post->name);
-        $this->assertEquals('demo-slug', $post->slug);
+        $this->assertEquals('demo', $post->getName());
+        $this->assertEquals('demo-slug', $post->getSlug());
     }
 
     public function testDelete()

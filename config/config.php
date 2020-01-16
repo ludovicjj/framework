@@ -1,5 +1,7 @@
 <?php
 
+use App\Domain\Common\Form\FormFactory;
+use App\Domain\Common\Form\Interfaces\FormFactoryInterface;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use App\Domain\Common\Renderer\TwigRendererFactory;
 use App\Domain\Common\Router\Interfaces\RouterInterface;
@@ -9,6 +11,7 @@ use App\Domain\Common\Session\Interfaces\FlashBagInterface;
 use App\Domain\Common\Session\Interfaces\SessionInterface;
 use App\Domain\Common\Session\PHPSession;
 use App\Domain\Common\Twig\FlashBagExtension;
+use App\Domain\Common\Twig\FormExtension;
 use App\Domain\Common\Twig\PagerFantaExtension;
 use App\Domain\Common\Twig\RouterExtension;
 use App\Domain\Common\Twig\TextExtension;
@@ -29,8 +32,10 @@ return [
         get(PagerFantaExtension::class),
         get(TextExtension::class),
         get(TimeExtension::class),
-        get(FlashBagExtension::class)
+        get(FlashBagExtension::class),
+        get(FormExtension::class)
     ],
+    FormFactoryInterface::class => create(FormFactory::class),
     SessionInterface::class => create(PHPSession::class),
     FlashBagInterface::class => factory(FlashBagFactory::class),
     RouterInterface::class => create(Router::class),

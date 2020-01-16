@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domain\Blog\Repository;
+namespace App\Domain\Repository;
 
-use App\Domain\Blog\Entity\PostEntity;
+use App\Domain\Entity\PostEntity;
 use App\Domain\Common\Pagination\PaginationQuery;
 use Pagerfanta\Pagerfanta;
 use PDO;

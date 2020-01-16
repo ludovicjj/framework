@@ -2,9 +2,9 @@
 
 namespace App\Domain\Admin\Handler\Posts;
 
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Common\Form\Interfaces\FormInterface;
+use App\Domain\Repository\PostRepository;
 use App\Domain\Common\Session\Interfaces\FlashBagInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class CreateHandler extends AbstractHandler
 {
@@ -30,25 +30,24 @@ class CreateHandler extends AbstractHandler
     /**
      * Check method from request,
      * filter request body by method getFilterParams() from abstract class AbstractHandler.
-     * Create post.
+     * Save post in DB.
      *
-     * @param ServerRequestInterface $request
+     * @param FormInterface $form
      * @return bool
      */
-    public function handle(ServerRequestInterface $request): bool
+    public function handle(FormInterface $form)
     {
-        if ($request->getMethod() === 'POST') {
-            $params = $this->getFilterParams($request);
-            $params = array_merge(
-                $params,
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $this->getFilterParams($form->getData());
+            $data = array_merge(
+                $data,
                 [
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s')
                 ]
             );
-            $this->postRepository->insert($params);
+            $this->postRepository->insert($data);
             $this->flashBag->add('success', 'L\'article a bien été ajouté');
-
             return true;
         }
         return false;

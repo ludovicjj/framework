@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Posts;
 
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Repository\PostRepository;
 use App\Domain\Common\Exception\NotFoundRecordsException;
 use App\Domain\Common\Router\Interfaces\RouterInterface;
 use App\Domain\Common\Session\Interfaces\FlashBagInterface;
@@ -46,7 +46,7 @@ class DeleteAction
      */
     public function delete(ServerRequestInterface $request): ResponseInterface
     {
-        $post = $this->postRepository->find($request->getAttribute('id'));
+        $post = $this->postRepository->find((int)$request->getAttribute('id'));
 
         if (\is_null($post)) {
             throw new NotFoundRecordsException(
@@ -57,7 +57,7 @@ class DeleteAction
             );
         }
 
-        $this->postRepository->delete((int)$post->id);
+        $this->postRepository->delete((int)$post->getId());
         $this->flashBag->add('success', 'L\'article a bien été supprimé');
         return new RedirectResponse($this->router->generateUri('admin.posts.index'));
     }

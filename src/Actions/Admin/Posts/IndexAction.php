@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Posts;
 
-use App\Domain\Blog\Repository\PostRepository;
+use App\Domain\Repository\PostRepository;
 use App\Domain\Common\Exception\NotFoundException;
 use App\Domain\Common\Renderer\Interfaces\TwigRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;

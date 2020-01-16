@@ -1,4 +1,8 @@
-<div class="form-group">
+{{ form_row(form.name) }}
+{{ form_row(form.slug) }}
+{{ form_row(form.content) }}
+
+{#<div class="form-group">
     <label for="name">Titre</label>
     <input type="text" class="form-control" name="name" id="name" value="{{ post.name }}">
 </div>
@@ -11,4 +15,4 @@
 <div class="form-group">
     <label for="content">Description</label>
     <textarea class="form-control" name="content" id="content" rows="10">{{ post.content }}</textarea>
-</div>
+</div>#}
